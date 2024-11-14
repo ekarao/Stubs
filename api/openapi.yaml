@@ -1,0 +1,365 @@
+openapi: 3.0.3
+info:
+  title: My Account BFF API
+  description: These APIs are for the Digital Chanels to connect to EIP and manage
+    My Account features
+  contact:
+    name: Ekalavya Rao
+    email: erao3@agl.com.au
+  version: 1.0.1
+externalDocs:
+  description: Find out more about the BFF API
+  url: https://aglenergy.atlassian.net/wiki/spaces/RNP2/pages/3608445770/BFFDIG_MOBAUTH_CPREF_01+-+RT00-2376+Salesforce+Integration+for+Preference+Data+-+My+Account+Web+Mobile+to+Salesforce
+servers:
+- url: sit.platform.api.agl.com.au
+- url: ppd.platform.api.agl.com.au
+tags:
+- name: Manage Preference
+- name: Authorized Contact
+paths:
+  /bffdig/customer/v1/details/{customerId}:
+    get:
+      tags:
+      - Manage Preference
+      summary: Get Customer and Authorized contact details
+      description: Get Customer and Authorized contact details
+      operationId: getManagePreference
+      parameters:
+      - name: customerId
+        in: path
+        description: Salesforce customer id that needs to be retrieved
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: "0100000100"
+      - name: x-correlation-id
+        in: header
+        description: Correlation Id of the message
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: e89be8f2-42d0-4c7a-acbe-f0d29c0e7df1
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        "404":
+          description: CustomerId not found
+        "429":
+          description: Too many requests
+        "500":
+          description: Internal Server error
+        "504":
+          description: Gateway Timeout
+      x-swagger-router-controller: ManagePreference
+  /bffdig/customer/v1/authorizedPerson:
+    post:
+      tags:
+      - Authorized Contact
+      summary: Add Authorized Contact
+      description: Add Authorized contact
+      operationId: addAuthorizedContact
+      parameters:
+      - name: x-correlation-id
+        in: header
+        description: Correlation Id of the message
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 0c7e6e82-2c2d-4558-a34a-6ec50f2a719e
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Add_AuthorizedContact_Request'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Add_AuthorizedContact_Response'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_400'
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_429'
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_500'
+        "504":
+          description: Gateway Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_504'
+      x-swagger-router-controller: AuthorizedContact
+    delete:
+      tags:
+      - Authorized Contact
+      summary: Delete Authorized contact relationship
+      description: Delete Authorized contact relationship
+      operationId: deleteAuthorizedContact
+      parameters:
+      - name: x-correlation-id
+        in: header
+        description: Correlation Id of the message
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Delete Authorized Contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Delete_AuthorizedContact_Request'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Delete_AuthorizedContact_Response'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_400'
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_429'
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_500'
+        "504":
+          description: Gateway Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse_504'
+      x-swagger-router-controller: AuthorizedContact
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        individual:
+          $ref: '#/components/schemas/Individual'
+        contactMedium:
+          $ref: '#/components/schemas/ContactMedium'
+        authorizedContact:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizedContact'
+      example:
+        contactMedium:
+          emailAddress: john.doe@gmail.com
+          phoneNumber: "+61412345678"
+          mailingAddress: "699 BOURKE STREET, DOCKLANDS, VIC 3006"
+        individual:
+          firstName: John
+          lastName: Doe
+        authorizedContact:
+        - firstName: Jane
+          lastName: Doe
+          phoneNumber: "+61412345678"
+          customerId: "010000102"
+        - firstName: Jane
+          lastName: Doe
+          phoneNumber: "+61412345678"
+          customerId: "010000102"
+    Individual:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+      example:
+        firstName: John
+        lastName: Doe
+    ContactMedium:
+      type: object
+      properties:
+        emailAddress:
+          type: string
+          example: john.doe@gmail.com
+        phoneNumber:
+          type: string
+          example: "+61412345678"
+        mailingAddress:
+          type: string
+          example: "699 BOURKE STREET, DOCKLANDS, VIC 3006"
+      example:
+        emailAddress: john.doe@gmail.com
+        phoneNumber: "+61412345678"
+        mailingAddress: "699 BOURKE STREET, DOCKLANDS, VIC 3006"
+    AuthorizedContact:
+      type: object
+      properties:
+        customerId:
+          type: string
+          example: "010000102"
+        firstName:
+          type: string
+          example: Jane
+        lastName:
+          type: string
+          example: Doe
+        phoneNumber:
+          type: string
+          example: "+61412345678"
+      example:
+        firstName: Jane
+        lastName: Doe
+        phoneNumber: "+61412345678"
+        customerId: "010000102"
+    Add_AuthorizedContact_Request:
+      type: object
+      properties:
+        customerId:
+          type: string
+          example: "010000102"
+        authorizedContact:
+          $ref: '#/components/schemas/Add_AuthorizedContact_Request_authorizedContact'
+    Add_AuthorizedContact_Response:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "201"
+        message:
+          type: string
+          example: Successful
+      example:
+        message: Successful
+        status: "201"
+    Delete_AuthorizedContact_Request:
+      required:
+      - customerId
+      - relatedCustomerId
+      type: object
+      properties:
+        customerId:
+          type: string
+          example: "010000100"
+        relatedCustomerId:
+          type: string
+          example: "010000102"
+    Delete_AuthorizedContact_Response:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: Successful
+      example:
+        message: Successful
+        status: 200
+    errorResponse_400:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 400
+        description:
+          type: string
+          example: Mandatory fields missing
+    errorResponse_429:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 429
+        description:
+          type: string
+          example: "Too many requests, please try again later."
+    errorResponse_500:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 500
+        description:
+          type: string
+          example: Unexpected error occured while processing the request.
+    errorResponse_504:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 504
+        description:
+          type: string
+          example: "Request timed out, please try again later."
+    Add_AuthorizedContact_Request_authorizedContact:
+      required:
+      - acceptTnC
+      - dateOfBirth
+      - firstName
+      - lastName
+      - phoneNumber
+      type: object
+      properties:
+        firstName:
+          maxLength: 20
+          type: string
+          example: John
+        lastName:
+          maxLength: 20
+          type: string
+          example: Doe
+        dateOfBirth:
+          pattern: "/^(?:0[1-9]|[12]\\d|3[01])([\\-])(?:0[1-9]|1[012])\\1(?:19|20)\\\
+            d\\d$"
+          type: string
+          format: date
+          example: 0037-03-22
+        email:
+          type: string
+          example: john.doe@gmail.com
+        phoneNumber:
+          maxLength: 11
+          minLength: 9
+          type: string
+          example: "0412345678"
+        acceptTnC:
+          type: boolean
+          example: true
