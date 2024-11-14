@@ -48,6 +48,8 @@ paths:
           description: Successful operation
           headers:
             x-correlation-id:
+              style: simple
+              explode: false
               schema:
                 type: string
           content:
