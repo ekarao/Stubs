@@ -13,14 +13,14 @@ exports.getManagePreference = function(customerId,xCorrelationId) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
+  "individual" : {
+    "firstName" : "John",
+    "lastName" : "Doe"
+  },
   "contactMedium" : {
     "emailAddress" : "john.doe@gmail.com",
     "phoneNumber" : "+61412345678",
     "mailingAddress" : "699 BOURKE STREET, DOCKLANDS, VIC 3006"
-  },
-  "individual" : {
-    "firstName" : "John",
-    "lastName" : "Doe"
   },
   "authorizedContact" : [ {
     "firstName" : "Jane",

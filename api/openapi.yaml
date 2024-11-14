@@ -46,6 +46,10 @@ paths:
       responses:
         "200":
           description: Successful operation
+          headers:
+            x-correlation-id:
+              schema:
+                type: string
           content:
             application/json:
               schema:
